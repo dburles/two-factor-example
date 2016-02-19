@@ -1,0 +1,38 @@
+<head>
+  <title>two-factor-example</title>
+</head>
+
+<body>
+  {{#if currentUser}}
+    <p>Successfully signed in! - <input type="button" id="logout" value="Logout"></p>
+  {{else}}
+    {{#if isVerifying}}
+      {{> verify}}
+    {{else}}
+      {{> login}}
+    {{/if}}
+  {{/if}}
+</body>
+
+<template name="login">
+  {{#if loginError}}
+    <p>{{loginError}}</p>
+  {{/if}}
+
+  <form>
+    <input type="text" id="user" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <input type="submit" value="Login">
+  </form>
+</template>
+
+<template name="verify">
+  {{#if verifyError}}
+    <p>{{verifyError}}</p>
+  {{/if}}
+
+  <form>
+    <input type="text" id="code" placeholder="Authentication Code">
+    <input type="submit" value="Verify">
+  </form>
+</template>
