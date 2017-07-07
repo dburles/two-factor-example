@@ -2,19 +2,19 @@ if (Meteor.isClient) {
   Template.body.helpers({
     isVerifying() {
       return twoFactor.isVerifying();
-    }
+    },
   });
 
   Template.body.events({
     'click #logout'() {
       Meteor.logout();
-    }
+    },
   });
 
   Template.login.helpers({
     loginError() {
       return Session.get('loginError');
-    }
+    },
   });
 
   Template.login.events({
@@ -31,13 +31,13 @@ if (Meteor.isClient) {
 
         Session.set('loginError', '');
       });
-    }
+    },
   });
 
   Template.verify.helpers({
     verifyError() {
       return Session.get('verifyError');
-    }
+    },
   });
 
   Template.verify.events({
@@ -53,19 +53,33 @@ if (Meteor.isClient) {
 
         Session.set('verifyError', '');
       });
-    }
+    },
+    'click #abort'(event) {
+      event.preventDefault();
+      twoFactor.abort();
+    },
   });
 } else {
   twoFactor.sendCode = (user, code) => {
     console.log(`Authentication code for '${user.username}' user is: ${code}`);
   };
 
+  twoFactor.validateLoginAttempt = options => {
+    return !options.user.twoFactorEnabled;
+  };
+
+  // Allow users without two factor enabled to sign in normally
+  Accounts.onCreateUser((options, user) => {
+    user.twoFactorEnabled = true;
+    return user;
+  });
+
   // Gives us an account to test with
   Meteor.startup(() => {
     if (Meteor.users.find().count() === 0) {
       Accounts.createUser({
         username: 'example',
-        password: 'password'
+        password: 'password',
       });
     }
   });
